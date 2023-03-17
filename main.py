@@ -173,3 +173,11 @@ if __name__ == "__main__":
     print("\n\nBRIEF Results \nImage one keypoints: ", len(resultThree[0]), "\nImage Two keypoints: ", len(
         resultThree[1]), "\nMatches between: ", len(resultThree[2]))
     resultFour = loftrTest(imageOne, imageTwo, 'indoor')
+
+    #!!!!WARNING!!!!
+    # REQUIRES PYTHON 3.7,3.6,3.5,3.4,2.7 AND opencv-contrib-python 3.2.2.17
+    # Don't Enable otherwise
+    #
+    # resultFive = surfTest(img1, img2)
+    # print("\n\nBRIEF Results \nImage one keypoints: ", len(resultFive[0]), "\nImage Two keypoints: ", len(
+    #    resultFive[1]), "\nMatches between: ", len(resultFive[2]))
