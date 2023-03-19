@@ -8,6 +8,7 @@ import pandas as pd
 from matplotlib import pyplot as plt
 from src.utils.plotting import make_matching_figure
 from src.loftr import LoFTR, default_cfg
+import time
 
 
 def siftTest(img1, img2):
@@ -81,7 +82,7 @@ def briefTest(img1, img2):
     matches = bf.knnMatch(des1, des2, k=2)
     results = []
     for m, n in matches:
-        if m.distance < 0.75*n.distance:
+        if m.distance < 0.95*n.distance:
             results.append([m])
 
     return des1, des2, results
@@ -111,7 +112,9 @@ def loftrTest(img1, img2, type):
     with torch.no_grad():
         matcher(batch)
         mkpts0 = batch['mkpts0_f'].cpu().numpy()
+        # print(len(batch['mkpts0_f'].cpu().numpy().T[0]))
         mkpts1 = batch['mkpts1_f'].cpu().numpy()
+        # print(len(batch['mkpts1_f'].cpu().numpy().T[0]))
         mconf = batch['mconf'].cpu().numpy()
     color = cm.jet(mconf, alpha=0.7)
     text = [
@@ -121,11 +124,12 @@ def loftrTest(img1, img2, type):
     make_matching_figure(img0_raw, img1_raw, mkpts0, mkpts1,
                          color, mkpts0, mkpts1, text, path="LoFTR-result.pdf")
 
-    print("batch items \n")
+    # print("batch items \n")
     # for k, v in batch.items():
     #    print (k)
-    print("Keypoints for image 1\n")
+    print("\nLoFTR Results \nKeypoints for images")
     print(len(batch['mkpts0_f'].cpu().numpy().T[0]))
+    # print(len(batch['mkpts1_f'].cpu().numpy().T[0]))
     return '\nend loftr'
 
 
@@ -134,6 +138,8 @@ def orbTest(img1, img2):
 
     img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
     img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
+    img1 = cv2.resize(img1, (640, 480))
+    img2 = cv2.resize(img2, (640, 480))
 
     kp1, des1 = orb.detectAndCompute(img1, None)
     kp2, des2 = orb.detectAndCompute(img2, None)
@@ -153,31 +159,48 @@ def orbTest(img1, img2):
 
 
 if __name__ == "__main__":
-    # imageOne = 'TestOne.pgm'
-    # imageTwo = 'TestTwo.pgm'
-    img1 = cv2.imread('TestThree.jpg')
-    img2 = cv2.imread('TestThree2.jpg')
+    # img1 = cv2.imread('TestThree.jpg')
+    # img2 = cv2.imread('TestThree2.jpg')
+    # img1 = cv2.imread('dog1.jpg')
+    # img2 = cv2.imread('dog2.jpg')
+    img1 = cv2.imread('room-1.jpeg')
+    img2 = cv2.imread('room-2.jpeg')
     # imageOne = 'TestThree.jpg'
-    # imageTwo = 'TestThree.jpg'
+    # imageTwo = 'TestThree2.jpg'
+    # imageOne = 'dog1.jpg'
+    # imageTwo = 'dog2.jpg'
     imageOne = 'room-1.jpeg'
     imageTwo = 'room-2.jpeg'
     # print(torch.cuda.is_available())
-
+    start_time = time.time()
     resultOne = orbTest(img1, img2)
     print("\n\nORB Results \nImage one keypoints: ", len(resultOne[0]), "\nImage Two keypoints: ", len(
         resultOne[1]), "\nMatches between: ", len(resultOne[2]))
+    print("Program took ", time.time() - start_time, " to run.")
+
+    start_time = time.time()
     resultTwo = siftTest(img1, img2)
     print("\n\nSIFT Results \nImage one keypoints: ", len(resultTwo[0]), "\nImage Two keypoints: ", len(
         resultTwo[1]), "\nMatches between: ", len(resultTwo[2]))
+    print("Program took ", time.time() - start_time, " to run.")
+
+    start_time = time.time()
     resultThree = briefTest(img1, img2)
     print("\n\nBRIEF Results \nImage one keypoints: ", len(resultThree[0]), "\nImage Two keypoints: ", len(
         resultThree[1]), "\nMatches between: ", len(resultThree[2]))
+    print("Program took ", time.time() - start_time, " to run.")
+
+    start_time = time.time()
     resultFour = loftrTest(imageOne, imageTwo, 'indoor')
+    # resultFour = loftrTest(imageOne, imageTwo, 'outdoor')
+    print("Program took ", time.time() - start_time, " to run.")
 
     #!!!!WARNING!!!!
     # REQUIRES PYTHON 3.7,3.6,3.5,3.4,2.7 AND opencv-contrib-python 3.2.2.17
     # Don't Enable otherwise
     #
+    # start_time = time.time()
     # resultFive = surfTest(img1, img2)
     # print("\n\nBRIEF Results \nImage one keypoints: ", len(resultFive[0]), "\nImage Two keypoints: ", len(
     #    resultFive[1]), "\nMatches between: ", len(resultFive[2]))
+    #    print("Program took ", time.time() - start_time, " to run.")
