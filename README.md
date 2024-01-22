@@ -1,5 +1,5 @@
 # CS-410-510-ComputerVisionProject
-Work done on keypoint detection benchmarking accross multiple methodologies within the field of computer vision. This includes models that make use of NVIDIA CUDA cores as well as depreciated versions of python. to access.
+Work done on keypoint detection benchmarking accross multiple methodologies within the field of computer vision. This includes models that make use of machine learning and NVIDIA CUDA cores, as well as depreciated versions of python to access public builds.
 
 # Models observed
 - Scale-invariant feature transform (SIFT)
